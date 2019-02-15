@@ -41,7 +41,8 @@ var BASE_URL_FORMAT = 'https://%s';
  * @param   {String}  options.domain                  AuthenticationClient server domain.
  * @param   {String}  [options.clientId]              Default client ID.
  * @param   {String}  [options.clientSecret]          Default client Secret.
- * @param   {String}  [options.supportedAlgorithms]   Algorithms that your application expects to receive
+ * @param   {String}  [options.supportedAlgorithms]   Algorithms that your application expects to receive.
+ * @param   {String}  [options.proxy]                 Proxy server URI.
  */
 var AuthenticationClient = function(options) {
   if (!options || typeof options !== 'object') {
@@ -70,6 +71,10 @@ var AuthenticationClient = function(options) {
       var telemetry = jsonToBase64(clientInfo);
       managerOptions.headers['Auth0-Client'] = telemetry;
     }
+  }
+
+  if (options.proxy !== undefined) {
+    managerOptions.proxy = options.proxy;
   }
 
   /**

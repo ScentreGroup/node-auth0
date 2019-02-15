@@ -17,6 +17,7 @@ var OAUthWithIDTokenValidation = require('./OAUthWithIDTokenValidation');
  * @param  {String}              options.domain         AuthenticationClient server domain
  * @param  {String}              [options.clientId]     Default client ID.
  * @param  {String}              [options.clientSecret] Default client Secret.
+ * @param  {String}              [options.proxy]        Proxy server URI.
  */
 var OAuthAuthenticator = function(options) {
   if (!options) {
@@ -36,6 +37,10 @@ var OAuthAuthenticator = function(options) {
     errorFormatter: { message: 'message', name: 'error' },
     headers: options.headers
   };
+
+  if (options.proxy !== undefined) {
+    clientOptions.proxy = options.proxy;
+  }
 
   this.oauth = new RestClient(options.baseUrl + '/oauth/:type', clientOptions);
   this.oauthWithIDTokenValidation = new OAUthWithIDTokenValidation(this.oauth, options);
