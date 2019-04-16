@@ -30,6 +30,8 @@ var EmailTemplatesManager = require('./EmailTemplatesManager');
 var GuardianManager = require('./GuardianManager');
 var CustomDomainsManager = require('./CustomDomainsManager');
 
+var Auth0RestClientFactory = require('../Auth0RestClientFactory');
+
 var BASE_URL_FORMAT = 'https://%s/api/v2';
 var MANAGEMENT_API_AUD_FORMAT = 'https://%s/api/v2/';
 
@@ -134,13 +136,22 @@ var ManagementClient = function(options) {
 
   managerOptions.retry = options.retry;
 
+  if (options.proxy !== undefined) {
+    managerOptions.proxy = options.proxy;
+  }
+
+  /**
+   * Creator function to setup common rest client in each manager
+   */
+  var auth0RestClientFactory = new Auth0RestClientFactory(managerOptions);
+
   /**
    * Simple abstraction for performing CRUD operations on the
    * clients endpoint.
    *
    * @type {ClientsManager}
    */
-  this.clients = new ClientsManager(managerOptions);
+  this.clients = new ClientsManager(auth0RestClientFactory);
 
   /**
    * Simple abstraction for performing CRUD operations on the client grants
@@ -148,7 +159,7 @@ var ManagementClient = function(options) {
    *
    * @type {ClientGrantsManager}
    */
-  this.clientGrants = new ClientGrantsManager(managerOptions);
+  this.clientGrants = new ClientGrantsManager(auth0RestClientFactory);
 
   /**
    * Simple abstraction for performing CRUD operations on the grants
@@ -188,7 +199,7 @@ var ManagementClient = function(options) {
    *
    * @type {ConnectionsManager}
    */
-  this.connections = new ConnectionsManager(managerOptions);
+  this.connections = new ConnectionsManager(auth0RestClientFactory);
 
   /**
    * Simple abstraction for performing CRUD operations on the

@@ -11,33 +11,16 @@ var RetryRestClient = require('../RetryRestClient');
  * @constructor
  * @memberOf module:management
  *
- * @param {Object} options            The client options.
- * @param {String} options.baseUrl    The URL of the API.
- * @param {Object} [options.headers]  Headers to be included in all requests.
- * @param {Object} [options.retry]    Retry Policy Config
+ * @param {Function} restClientCreator Factory method to create rest client
  */
-var ClientGrantsManager = function(options) {
-  if (options === null || typeof options !== 'object') {
-    throw new ArgumentError('Must provide client options');
-  }
-
-  if (options.baseUrl === null || options.baseUrl === undefined) {
-    throw new ArgumentError('Must provide a base URL for the API');
-  }
-
-  if ('string' !== typeof options.baseUrl || options.baseUrl.length === 0) {
-    throw new ArgumentError('The provided base URL is invalid');
-  }
-
+var ClientGrantsManager = function(restClientCreator) {
   /**
    * Options object for the Rest Client instance.
    *
    * @type {Object}
    */
   var clientOptions = {
-    errorFormatter: { message: 'message', name: 'error' },
-    headers: options.headers,
-    query: { repeatParams: false }
+    errorFormatter: { message: 'message', name: 'error' }
   };
 
   /**
@@ -46,12 +29,7 @@ var ClientGrantsManager = function(options) {
    *
    * @type {external:RestClient}
    */
-  var auth0RestClient = new Auth0RestClient(
-    options.baseUrl + '/client-grants/:id',
-    clientOptions,
-    options.tokenProvider
-  );
-  this.resource = new RetryRestClient(auth0RestClient, options.retry);
+  this.resource = restClientCreator('/client-grants/:id', clientOptions);
 };
 
 /**
